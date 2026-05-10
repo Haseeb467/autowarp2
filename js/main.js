@@ -8,6 +8,66 @@
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const setupSiteLoader = () => {
+    const loader = document.querySelector(".site-loader");
+    if (!loader) return;
+
+    const title = loader.querySelector(".site-loader-title");
+    const bar = loader.querySelector("[data-loader-bar]");
+    const progress = loader.querySelector("[data-loader-progress]");
+    const minProgressMs = 1000;
+    const minRevealMs = prefersReducedMotion ? 0 : 2450;
+    const startedAt = performance.now();
+    let progressTimer;
+    let isFinished = false;
+
+    body.classList.add("loader-active");
+
+    const setProgress = (value) => {
+      const rounded = Math.max(0, Math.min(100, Math.round(value)));
+      if (bar) bar.style.width = `${rounded}%`;
+      if (progress) progress.textContent = `${rounded}%`;
+    };
+
+    const hideLoader = () => {
+      if (isFinished) return;
+      isFinished = true;
+      clearInterval(progressTimer);
+      setProgress(100);
+
+      title?.classList.add("is-clearing");
+      window.setTimeout(
+        () => {
+          body.classList.add("loader-complete", "page-loaded");
+          body.classList.remove("loader-active");
+          loader.setAttribute("aria-hidden", "true");
+
+          window.setTimeout(() => loader.remove(), 700);
+        },
+        prefersReducedMotion ? 0 : 420
+      );
+    };
+
+    const finishWhenReady = () => {
+      const elapsed = performance.now() - startedAt;
+      const wait = Math.max(minRevealMs - elapsed, 0);
+      window.setTimeout(hideLoader, wait + (prefersReducedMotion ? 0 : 180));
+    };
+
+    progressTimer = window.setInterval(() => {
+      const elapsed = performance.now() - startedAt;
+      setProgress(Math.min((elapsed / minProgressMs) * 100, 100));
+    }, 32);
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", finishWhenReady, { once: true });
+    } else {
+      finishWhenReady();
+    }
+  };
+
+  setupSiteLoader();
+
   window.addEventListener("load", () => {
     body.classList.add("page-loaded");
     if (window.lucide) {

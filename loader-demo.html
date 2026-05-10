@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autoskins Loader Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #050505;
+        --ink: #f5f5ef;
+        --muted: rgba(245, 245, 239, 0.58);
+        --accent: #00b36b;
+        --accent-dark: #035c3a;
+        --line: rgba(255, 255, 255, 0.13);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-width: 320px;
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 50% 58%, rgba(0, 179, 107, 0.18), transparent 24rem),
+          radial-gradient(circle at 12% 20%, rgba(255, 255, 255, 0.08), transparent 18rem),
+          linear-gradient(180deg, #090909, var(--bg));
+        font-family: "Inter", system-ui, sans-serif;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        background-size: 92px 92px;
+        mask-image: radial-gradient(circle at center, black, transparent 78%);
+      }
+
+      .loader-demo {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: clamp(24px, 5vw, 72px);
+        isolation: isolate;
+      }
+
+      .loader-demo::before,
+      .loader-demo::after {
+        content: "";
+        position: absolute;
+        inset: auto 8vw 16vh;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0, 179, 107, 0.95), transparent);
+        transform: scaleX(0.35);
+        opacity: 0.7;
+      }
+
+      .loader-demo::after {
+        inset: 14vh 16vw auto;
+        transform: scaleX(0.2);
+        opacity: 0.36;
+      }
+
+      .loader-shell {
+        width: min(860px, 100%);
+        text-align: center;
+      }
+
+      .loader-mark {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 26px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(0, 179, 107, 0.42);
+        border-radius: 10px;
+        background:
+          linear-gradient(145deg, rgba(0, 179, 107, 0.18), rgba(255, 255, 255, 0.04)),
+          rgba(255, 255, 255, 0.03);
+        box-shadow: 0 24px 70px rgba(0, 179, 107, 0.18);
+      }
+
+      .loader-mark span {
+        color: var(--accent);
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 36px;
+        line-height: 1;
+      }
+
+      .loader-eyebrow {
+        margin: 0 0 16px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.42em;
+        text-transform: uppercase;
+      }
+
+      .loader-title {
+        display: flex;
+        justify-content: center;
+        gap: clamp(12px, 2.5vw, 26px);
+        margin: 0;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(4.5rem, 15vw, 13rem);
+        line-height: 0.82;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      .loader-word {
+        display: inline-flex;
+        overflow: hidden;
+      }
+
+      .loader-letter {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(110%) skewX(-10deg);
+        animation: letterIn 1.05s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        animation-delay: calc(var(--i) * 0.12s);
+        text-shadow: 0 34px 70px rgba(0, 0, 0, 0.72);
+        transition: opacity 0.38s ease, transform 0.38s ease;
+      }
+
+      .loader-title.is-clearing .loader-letter {
+        opacity: 0;
+        transform: translateY(-110%) skewX(-10deg);
+        transition-delay: 0s;
+      }
+
+      .loader-word:nth-child(2) .loader-letter {
+        color: rgba(245, 245, 239, 0.9);
+        -webkit-text-stroke: 1px rgba(245, 245, 239, 0.82);
+      }
+
+      .loader-subline {
+        width: min(620px, 90vw);
+        margin: 26px auto 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+      }
+
+      .loader-subline::before,
+      .loader-subline::after {
+        content: "";
+        width: clamp(42px, 10vw, 112px);
+        height: 1px;
+        background: var(--accent);
+      }
+
+      .progress-wrap {
+        width: min(540px, 86vw);
+        margin: 54px auto 0;
+      }
+
+      .progress-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        color: rgba(245, 245, 239, 0.72);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+      }
+
+      .progress-track {
+        position: relative;
+        height: 8px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .progress-bar {
+        width: 0%;
+        height: 100%;
+        border-radius: inherit;
+        background:
+          linear-gradient(90deg, var(--accent-dark), var(--accent), #9df8d2),
+          var(--accent);
+        box-shadow: 0 0 26px rgba(0, 179, 107, 0.62);
+        transition: width 0.16s linear;
+      }
+
+      .progress-track::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transform: translateX(-110%);
+        animation: scan 1.2s ease-in-out infinite;
+      }
+
+      .demo-preview {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 32px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.7s ease, visibility 0.7s ease;
+      }
+
+      .demo-preview.is-visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .preview-card {
+        width: min(740px, 100%);
+        border: 1px solid rgba(0, 179, 107, 0.22);
+        border-radius: 14px;
+        padding: clamp(28px, 5vw, 58px);
+        background:
+          linear-gradient(145deg, rgba(0, 179, 107, 0.12), rgba(255, 255, 255, 0.03)),
+          rgba(8, 8, 8, 0.86);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
+        text-align: center;
+      }
+
+      .preview-card h2 {
+        margin: 0;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(3.4rem, 10vw, 7.5rem);
+        line-height: 0.9;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      .preview-card p {
+        max-width: 520px;
+        margin: 18px auto 28px;
+        color: var(--muted);
+        font-size: clamp(1rem, 2vw, 1.18rem);
+      }
+
+      .replay {
+        min-height: 48px;
+        padding: 0 24px;
+        border: 1px solid rgba(0, 179, 107, 0.52);
+        border-radius: 6px;
+        color: #06110d;
+        background: var(--accent);
+        cursor: pointer;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: 0 18px 42px rgba(0, 179, 107, 0.24);
+      }
+
+      .is-complete .loader-demo {
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(1.02);
+        transition: opacity 0.58s ease, transform 0.58s ease, visibility 0.58s ease;
+      }
+
+      @keyframes letterIn {
+        from {
+          opacity: 0;
+          transform: translateY(110%) skewX(-10deg);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0) skewX(-10deg);
+        }
+      }
+
+      @keyframes scan {
+        to {
+          transform: translateX(110%);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .loader-title {
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .loader-subline {
+          gap: 10px;
+          font-size: 0.66rem;
+          letter-spacing: 0.22em;
+        }
+
+        .progress-wrap {
+          margin-top: 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="loader-demo" aria-label="Autoskins loading demo">
+      <div class="loader-shell">
+        <div class="loader-mark" aria-hidden="true"><span>A</span></div>
+        <p class="loader-eyebrow">Protection Meets Perfection</p>
+        <h1 class="loader-title" aria-label="Autoskins">
+          <span class="loader-word" aria-hidden="true">
+            <span class="loader-letter" style="--i: 0">A</span>
+            <span class="loader-letter" style="--i: 1">U</span>
+            <span class="loader-letter" style="--i: 2">T</span>
+            <span class="loader-letter" style="--i: 3">O</span>
+          </span>
+          <span class="loader-word" aria-hidden="true">
+            <span class="loader-letter" style="--i: 5">S</span>
+            <span class="loader-letter" style="--i: 6">K</span>
+            <span class="loader-letter" style="--i: 7">I</span>
+            <span class="loader-letter" style="--i: 8">N</span>
+            <span class="loader-letter" style="--i: 9">S</span>
+          </span>
+        </h1>
+        <div class="loader-subline">PPF Wrap Tint Headliners</div>
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span>Loading Studio</span>
+            <span data-progress>0%</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" data-bar></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-preview" aria-label="Loader complete preview">
+      <div class="preview-card">
+        <h2>Site Ready</h2>
+        <p>This is only the loader preview. After approval, it can be attached before the homepage content.</p>
+        <button class="replay" type="button" data-replay>Replay Loader</button>
+      </div>
+    </section>
+
+    <script>
+      const body = document.body;
+      const title = document.querySelector(".loader-title");
+      const letters = document.querySelectorAll(".loader-letter");
+      const bar = document.querySelector("[data-bar]");
+      const progress = document.querySelector("[data-progress]");
+      const preview = document.querySelector(".demo-preview");
+      const replay = document.querySelector("[data-replay]");
+      let timer;
+      let finishTimer;
+      let wordTimer;
+
+      function restartWordAnimation() {
+        title.classList.remove("is-clearing");
+        letters.forEach((letter) => {
+          letter.style.animation = "none";
+        });
+
+        requestAnimationFrame(() => {
+          letters.forEach((letter) => {
+            letter.style.animation = "";
+          });
+        });
+      }
+
+      function runLoader() {
+        clearInterval(timer);
+        clearTimeout(finishTimer);
+        clearTimeout(wordTimer);
+        finishTimer = null;
+        body.classList.remove("is-complete");
+        preview.classList.remove("is-visible");
+        restartWordAnimation();
+        bar.style.width = "0%";
+        progress.textContent = "0%";
+
+        let current = 0;
+        const simulatedLoadMs = 1000;
+        const wordRevealMs = 2450;
+        const startedAt = performance.now();
+
+        wordTimer = setTimeout(() => {
+          title.classList.add("is-clearing");
+        }, wordRevealMs - 420);
+
+        timer = setInterval(() => {
+          const elapsed = performance.now() - startedAt;
+          current = Math.min((elapsed / simulatedLoadMs) * 100, 100);
+          bar.style.width = `${current}%`;
+          progress.textContent = `${Math.round(current)}%`;
+
+          if (current >= 100) {
+            clearInterval(timer);
+          }
+
+          const remaining = Math.max(wordRevealMs - elapsed, 0);
+          if (current >= 100 && !finishTimer) {
+            finishTimer = setTimeout(() => {
+              body.classList.add("is-complete");
+              preview.classList.add("is-visible");
+              finishTimer = null;
+            }, remaining + 180);
+          }
+        }, 32);
+      }
+
+      replay.addEventListener("click", runLoader);
+      window.addEventListener("load", runLoader);
+    </script>
+  </body>
+</html>
