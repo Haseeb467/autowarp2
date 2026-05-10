@@ -2908,7 +2908,7 @@ p {
   }
 
   .hero-light .hero-media {
-    inset: -14px 0 14px;
+    inset: -14px 0 -58px;
   }
 
   .hero-light .hero-media img {
