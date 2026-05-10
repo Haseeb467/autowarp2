@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;700;800&display=swap" rel="stylesheet" />
+    <noscript><style>.loader-demo{display:none}.demo-preview{opacity:1;visibility:visible}</style></noscript>
     <style>
       :root {
         --bg: #050505;
@@ -125,26 +126,10 @@
 
       .loader-word {
         display: inline-flex;
-        overflow: hidden;
-      }
-
-      .loader-letter {
-        display: inline-block;
-        opacity: 0;
-        transform: translateY(110%) skewX(-10deg);
-        animation: letterIn 1.05s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        animation-delay: calc(var(--i) * 0.12s);
         text-shadow: 0 34px 70px rgba(0, 0, 0, 0.72);
-        transition: opacity 0.38s ease, transform 0.38s ease;
       }
 
-      .loader-title.is-clearing .loader-letter {
-        opacity: 0;
-        transform: translateY(-110%) skewX(-10deg);
-        transition-delay: 0s;
-      }
-
-      .loader-word:nth-child(2) .loader-letter {
+      .loader-word:nth-child(2) {
         color: rgba(245, 245, 239, 0.9);
         -webkit-text-stroke: 1px rgba(245, 245, 239, 0.82);
       }
@@ -171,16 +156,9 @@
         background: var(--accent);
       }
 
-      .progress-wrap {
+      .loader-status {
         width: min(540px, 86vw);
-        margin: 54px auto 0;
-      }
-
-      .progress-meta {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
+        margin: 54px auto 14px;
         color: rgba(245, 245, 239, 0.72);
         font-size: 0.72rem;
         font-weight: 800;
@@ -188,33 +166,25 @@
         text-transform: uppercase;
       }
 
-      .progress-track {
-        position: relative;
+      .loader-track {
+        width: min(540px, 86vw);
         height: 8px;
+        margin: 0 auto;
         overflow: hidden;
         border: 1px solid var(--line);
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.06);
       }
 
-      .progress-bar {
-        width: 0%;
+      .loader-bar {
+        display: block;
+        width: 100%;
         height: 100%;
         border-radius: inherit;
         background:
           linear-gradient(90deg, var(--accent-dark), var(--accent), #9df8d2),
           var(--accent);
         box-shadow: 0 0 26px rgba(0, 179, 107, 0.62);
-        transition: width 0.16s linear;
-      }
-
-      .progress-track::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-        transform: translateX(-110%);
-        animation: scan 1.2s ease-in-out infinite;
       }
 
       .demo-preview {
@@ -282,24 +252,6 @@
         transition: opacity 0.58s ease, transform 0.58s ease, visibility 0.58s ease;
       }
 
-      @keyframes letterIn {
-        from {
-          opacity: 0;
-          transform: translateY(110%) skewX(-10deg);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0) skewX(-10deg);
-        }
-      }
-
-      @keyframes scan {
-        to {
-          transform: translateX(110%);
-        }
-      }
-
       @media (max-width: 640px) {
         .loader-title {
           gap: 10px;
@@ -312,41 +264,25 @@
           letter-spacing: 0.22em;
         }
 
-        .progress-wrap {
+        .loader-status {
           margin-top: 40px;
         }
       }
     </style>
   </head>
   <body>
-    <section class="loader-demo" aria-label="Autoskins loading demo">
+    <section class="loader-demo" aria-label="Autoskins loading demo" aria-live="polite">
       <div class="loader-shell">
         <div class="loader-mark" aria-hidden="true"><span>A</span></div>
         <p class="loader-eyebrow">Protection Meets Perfection</p>
         <h1 class="loader-title" aria-label="Autoskins">
-          <span class="loader-word" aria-hidden="true">
-            <span class="loader-letter" style="--i: 0">A</span>
-            <span class="loader-letter" style="--i: 1">U</span>
-            <span class="loader-letter" style="--i: 2">T</span>
-            <span class="loader-letter" style="--i: 3">O</span>
-          </span>
-          <span class="loader-word" aria-hidden="true">
-            <span class="loader-letter" style="--i: 5">S</span>
-            <span class="loader-letter" style="--i: 6">K</span>
-            <span class="loader-letter" style="--i: 7">I</span>
-            <span class="loader-letter" style="--i: 8">N</span>
-            <span class="loader-letter" style="--i: 9">S</span>
-          </span>
+          <span class="loader-word" aria-hidden="true">AUTO</span>
+          <span class="loader-word" aria-hidden="true">SKINS</span>
         </h1>
         <div class="loader-subline">PPF Wrap Tint Headliners</div>
-        <div class="progress-wrap">
-          <div class="progress-meta">
-            <span>Loading Studio</span>
-            <span data-progress>0%</span>
-          </div>
-          <div class="progress-track" aria-hidden="true">
-            <div class="progress-bar" data-bar></div>
-          </div>
+        <p class="loader-status">Loading</p>
+        <div class="loader-track" aria-hidden="true">
+          <span class="loader-bar"></span>
         </div>
       </div>
     </section>
@@ -361,68 +297,19 @@
 
     <script>
       const body = document.body;
-      const title = document.querySelector(".loader-title");
-      const letters = document.querySelectorAll(".loader-letter");
-      const bar = document.querySelector("[data-bar]");
-      const progress = document.querySelector("[data-progress]");
       const preview = document.querySelector(".demo-preview");
       const replay = document.querySelector("[data-replay]");
-      let timer;
       let finishTimer;
-      let wordTimer;
-
-      function restartWordAnimation() {
-        title.classList.remove("is-clearing");
-        letters.forEach((letter) => {
-          letter.style.animation = "none";
-        });
-
-        requestAnimationFrame(() => {
-          letters.forEach((letter) => {
-            letter.style.animation = "";
-          });
-        });
-      }
 
       function runLoader() {
-        clearInterval(timer);
         clearTimeout(finishTimer);
-        clearTimeout(wordTimer);
-        finishTimer = null;
         body.classList.remove("is-complete");
         preview.classList.remove("is-visible");
-        restartWordAnimation();
-        bar.style.width = "0%";
-        progress.textContent = "0%";
-
-        let current = 0;
-        const simulatedLoadMs = 1000;
-        const wordRevealMs = 2450;
-        const startedAt = performance.now();
-
-        wordTimer = setTimeout(() => {
-          title.classList.add("is-clearing");
-        }, wordRevealMs - 420);
-
-        timer = setInterval(() => {
-          const elapsed = performance.now() - startedAt;
-          current = Math.min((elapsed / simulatedLoadMs) * 100, 100);
-          bar.style.width = `${current}%`;
-          progress.textContent = `${Math.round(current)}%`;
-
-          if (current >= 100) {
-            clearInterval(timer);
-          }
-
-          const remaining = Math.max(wordRevealMs - elapsed, 0);
-          if (current >= 100 && !finishTimer) {
-            finishTimer = setTimeout(() => {
-              body.classList.add("is-complete");
-              preview.classList.add("is-visible");
-              finishTimer = null;
-            }, remaining + 180);
-          }
-        }, 32);
+        finishTimer = setTimeout(() => {
+          body.classList.add("is-complete");
+          preview.classList.add("is-visible");
+          finishTimer = null;
+        }, 1000);
       }
 
       replay.addEventListener("click", runLoader);

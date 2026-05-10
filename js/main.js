@@ -7,63 +7,38 @@
   const cursorRing = document.querySelector(".cursor-ring");
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let showSiteLoader = () => {};
 
   const setupSiteLoader = () => {
     const loader = document.querySelector(".site-loader");
-    if (!loader) return;
-
-    const title = loader.querySelector(".site-loader-title");
-    const bar = loader.querySelector("[data-loader-bar]");
-    const progress = loader.querySelector("[data-loader-progress]");
-    const minProgressMs = 1000;
-    const minRevealMs = prefersReducedMotion ? 0 : 2450;
-    const startedAt = performance.now();
-    let progressTimer;
-    let isFinished = false;
-
-    body.classList.add("loader-active");
-
-    const setProgress = (value) => {
-      const rounded = Math.max(0, Math.min(100, Math.round(value)));
-      if (bar) bar.style.width = `${rounded}%`;
-      if (progress) progress.textContent = `${rounded}%`;
-    };
+    if (!loader) {
+      body.classList.add("page-loaded");
+      return;
+    }
 
     const hideLoader = () => {
-      if (isFinished) return;
-      isFinished = true;
-      clearInterval(progressTimer);
-      setProgress(100);
-
-      title?.classList.add("is-clearing");
-      window.setTimeout(
-        () => {
-          body.classList.add("loader-complete", "page-loaded");
-          body.classList.remove("loader-active");
-          loader.setAttribute("aria-hidden", "true");
-
-          window.setTimeout(() => loader.remove(), 700);
-        },
-        prefersReducedMotion ? 0 : 420
-      );
+      body.classList.add("loader-complete", "page-loaded");
+      body.classList.remove("loader-active");
+      loader.setAttribute("aria-hidden", "true");
     };
 
-    const finishWhenReady = () => {
-      const elapsed = performance.now() - startedAt;
-      const wait = Math.max(minRevealMs - elapsed, 0);
-      window.setTimeout(hideLoader, wait + (prefersReducedMotion ? 0 : 180));
+    showSiteLoader = () => {
+      body.classList.remove("loader-complete", "page-exiting");
+      body.classList.add("loader-active");
+      loader.setAttribute("aria-hidden", "false");
     };
 
-    progressTimer = window.setInterval(() => {
-      const elapsed = performance.now() - startedAt;
-      setProgress(Math.min((elapsed / minProgressMs) * 100, 100));
-    }, 32);
+    showSiteLoader();
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", finishWhenReady, { once: true });
+    if (document.readyState === "complete") {
+      hideLoader();
     } else {
-      finishWhenReady();
+      window.addEventListener("load", hideLoader, { once: true });
     }
+
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) hideLoader();
+    });
   };
 
   setupSiteLoader();
@@ -139,13 +114,15 @@
   const setupPageTransitions = () => {
     document.querySelectorAll('a[href]:not([target]):not([href^="#"]):not([href^="mailto:"]):not([href^="tel:"])').forEach((link) => {
       link.addEventListener("click", (event) => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         const url = new URL(link.href, window.location.href);
-        if (url.origin !== window.location.origin || prefersReducedMotion) return;
+        if (url.origin !== window.location.origin) return;
+        if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
         event.preventDefault();
-        body.classList.add("page-exiting");
+        showSiteLoader();
         window.setTimeout(() => {
           window.location.href = url.href;
-        }, 260);
+        }, prefersReducedMotion ? 0 : 180);
       });
     });
   };
