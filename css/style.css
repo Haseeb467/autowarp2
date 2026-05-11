@@ -1452,31 +1452,6 @@ p {
   opacity: 1;
 }
 
-.cta-band {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(70px, 9vw, 112px) 0;
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.86), rgba(0, 0, 0, 0.58)),
-    url("../assets/images/client/06FFF07C-5210-412F-82E6-FA0F95F489B5.webp") center/cover;
-}
-
-.cta-band::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(10, 10, 10, 0.72), transparent 55%);
-  content: "";
-}
-
-.cta-content {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 28px;
-  align-items: end;
-}
-
 .page-hero {
   position: relative;
   display: grid;
@@ -1496,7 +1471,7 @@ p {
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.48)),
     linear-gradient(0deg, var(--bg), rgba(0, 0, 0, 0.1)),
-    var(--page-image, url("../assets/images/client/06FFF07C-5210-412F-82E6-FA0F95F489B5.webp")) center/cover;
+    var(--page-image, url("../assets/images/stock/luxury-black-car-studio.jpg")) center/cover;
   content: "";
 }
 
@@ -1545,6 +1520,11 @@ p {
 
 .service-detail:hover .service-detail-media img {
   transform: scale(1.04);
+}
+
+#headliners-starlights .service-detail-media img {
+  object-position: center 62%;
+  filter: brightness(1.12) contrast(1.05) saturate(1.12);
 }
 
 .service-detail-copy {
