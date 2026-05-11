@@ -69,11 +69,15 @@
         <div class="container">
           <div class="contact-layout">
             <div class="form-shell reveal">
-              <form class="contact-form" action="#" method="post">
+              <form class="contact-form" action="../send-mail.php" method="post">
                 <div class="form-panel-head">
                   <p class="eyebrow">Quote Intake</p>
                   <h2>Build Details</h2>
                   <p>Share the essentials and we will map the right film, finish, and install path for your vehicle.</p>
+                </div>
+                <div class="form-honeypot" aria-hidden="true">
+                  <label for="website">Website</label>
+                  <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
                 </div>
                 <div class="form-grid">
                   <div class="form-field">
@@ -149,6 +153,13 @@
                 <div>
                   <h3>Address</h3>
                   <p>8025 Fairview Rd Ste F<br />Mint Hill, NC</p>
+                </div>
+              </article>
+              <article class="contact-card reveal">
+                <span class="service-icon"><i data-lucide="clock-3"></i></span>
+                <div>
+                  <h3>Hours</h3>
+                  <p>Monday-Friday 8:30am-5:30pm<br />Saturday 8am-12pm</p>
                 </div>
               </article>
             </div>
@@ -227,7 +238,7 @@
             </span>
             <span class="footer-contact-line">
               <span class="footer-icon"><i data-lucide="clock-3"></i></span>
-              <span><strong>Hours</strong>Mon-Sat, 9am-6pm</span>
+              <span><strong>Hours</strong>Mon-Fri, 8:30am-5:30pm<br />Sat, 8am-12pm</span>
             </span>
           </address>
         </div>

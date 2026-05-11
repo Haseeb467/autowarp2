@@ -2220,6 +2220,14 @@ p {
   gap: 18px;
 }
 
+.form-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .form-field {
   display: grid;
   gap: 10px;

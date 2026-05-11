@@ -252,10 +252,46 @@
     const status = document.querySelector(".form-status");
     if (!form || !status) return;
 
-    form.addEventListener("submit", (event) => {
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      status.textContent = "Thanks. Your quote request is ready for review.";
-      form.reset();
+
+      if (window.location.protocol === "file:") {
+        status.textContent = "Open this page through Apache/PHP, not directly as a file.";
+        return;
+      }
+
+      status.textContent = "Sending request...";
+      if (submitButton) submitButton.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: form.method || "POST",
+          body: new FormData(form),
+          headers: {
+            Accept: "application/json",
+            "X-Requested-With": "fetch",
+          },
+        });
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          throw new Error("Mail endpoint is not running as PHP. Use XAMPP/Hostinger, not Live Server.");
+        }
+
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || "Message could not be sent.");
+        }
+
+        status.textContent = result.message || "Thanks. Your quote request has been sent.";
+        form.reset();
+      } catch (error) {
+        status.textContent = error.message || "Message could not be sent. Please call or DM Autoskins directly.";
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     });
   };
 
