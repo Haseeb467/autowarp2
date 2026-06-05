@@ -2318,14 +2318,130 @@ p {
 }
 
 .form-status {
-  min-height: 24px;
+  min-height: 0;
   margin: 0;
+  font-size: 0;
   color: var(--accent);
   font-weight: 800;
 }
 
+.form-status.is-error {
+  color: #ff6969;
+}
+
+.form-status.is-success {
+  color: var(--accent);
+}
+
 .form-actions .btn {
   min-width: 220px;
+}
+
+.form-popup {
+  position: fixed;
+  right: clamp(16px, 3vw, 34px);
+  bottom: clamp(16px, 3vw, 34px);
+  z-index: 2000;
+  width: min(440px, calc(100vw - 32px));
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(18px);
+  transition: opacity 0.24s ease, transform 0.24s ease;
+}
+
+.form-popup.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.form-popup-panel {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 34px;
+  gap: 14px;
+  align-items: start;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(0, 179, 107, 0.15), transparent 46%),
+    rgba(8, 8, 8, 0.96);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(16px);
+}
+
+.form-popup.is-error .form-popup-panel {
+  background:
+    linear-gradient(135deg, rgba(255, 72, 72, 0.17), transparent 46%),
+    rgba(8, 8, 8, 0.96);
+}
+
+.form-popup-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(0, 179, 107, 0.55);
+  border-radius: 8px;
+  background: rgba(0, 179, 107, 0.12);
+}
+
+.form-popup-icon::before {
+  color: var(--accent);
+  font-size: 1.25rem;
+  font-weight: 900;
+  content: "OK";
+}
+
+.form-popup.is-error .form-popup-icon {
+  border-color: rgba(255, 105, 105, 0.6);
+  background: rgba(255, 105, 105, 0.12);
+}
+
+.form-popup.is-error .form-popup-icon::before {
+  color: #ff6969;
+  content: "!";
+}
+
+.form-popup-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.form-popup-copy strong {
+  color: #fff;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.75rem;
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+}
+
+.form-popup-copy p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.form-popup-close {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-weight: 900;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.form-popup-close:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .form-note {

@@ -1,27 +1,40 @@
 <?php
 declare(strict_types=1);
 
-/*
-  Hostinger SMTP setup:
-  1. Create an email account in Hostinger, for example info@yourdomain.com.
-  2. Put that email and password below.
-  3. Upload this file to the site root, next to index.html.
-*/
-$recipientEmail = 'haseebdev786@gmail.com';
+$recipientEmail = 'trickyboy467@gmail.com';
 $subjectPrefix = 'Autoskins Quote Request';
 $saveLocalSubmissions = true;
 
 $smtp = [
     'enabled' => true,
-    'host' => 'smtp.hostinger.com',
+    'host' => 'smtp.gmail.com',
     'port' => 465,
     'encryption' => 'ssl', // ssl for port 465, tls for port 587
-    'username' => 'info@yourdomain.com',
-    'password' => 'REPLACE_WITH_HOSTINGER_EMAIL_PASSWORD',
-    'from_email' => 'info@yourdomain.com',
+    'username' => '',
+    'password' => '',
+    'from_email' => '',
     'from_name' => 'Autoskins Website',
     'timeout' => 20,
 ];
+
+$configPath = __DIR__ . '/mail-config.php';
+if (is_file($configPath)) {
+    $mailConfig = require $configPath;
+
+    if (is_array($mailConfig)) {
+        if (!empty($mailConfig['recipient_email'])) {
+            $recipientEmail = (string)$mailConfig['recipient_email'];
+        }
+
+        if (!empty($mailConfig['subject_prefix'])) {
+            $subjectPrefix = (string)$mailConfig['subject_prefix'];
+        }
+
+        if (!empty($mailConfig['smtp']) && is_array($mailConfig['smtp'])) {
+            $smtp = array_merge($smtp, $mailConfig['smtp']);
+        }
+    }
+}
 
 function wants_json(): bool
 {
@@ -283,4 +296,4 @@ if ($saveLocalSubmissions && is_local_server()) {
     respond(true, 'Local test saved. Add real SMTP details in send-mail.php before uploading.');
 }
 
-respond(false, "SMTP mail failed. Check send-mail.php SMTP username, password, and from_email. {$mailError}", 500);
+respond(false, "SMTP mail failed. Check mail-config.php SMTP username, app password, and from_email. {$mailError}", 500);

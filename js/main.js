@@ -253,16 +253,69 @@
     if (!form || !status) return;
 
     const submitButton = form.querySelector('button[type="submit"]');
+    const popup = document.createElement("div");
+    let popupTimer;
+
+    popup.className = "form-popup";
+    popup.setAttribute("aria-hidden", "true");
+    popup.setAttribute("role", "alert");
+    popup.innerHTML = `
+      <div class="form-popup-panel">
+        <span class="form-popup-icon" aria-hidden="true"></span>
+        <div class="form-popup-copy">
+          <strong></strong>
+          <p></p>
+        </div>
+        <button class="form-popup-close" type="button" aria-label="Close message">x</button>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    const popupTitle = popup.querySelector("strong");
+    const popupMessage = popup.querySelector("p");
+    const popupClose = popup.querySelector(".form-popup-close");
+
+    const closePopup = () => {
+      window.clearTimeout(popupTimer);
+      popup.classList.remove("is-visible");
+      popup.setAttribute("aria-hidden", "true");
+    };
+
+    const showPopup = (type, title, message) => {
+      window.clearTimeout(popupTimer);
+      popup.classList.toggle("is-success", type === "success");
+      popup.classList.toggle("is-error", type === "error");
+      if (popupTitle) popupTitle.textContent = title;
+      if (popupMessage) popupMessage.textContent = message;
+      popup.setAttribute("aria-hidden", "false");
+      popup.classList.add("is-visible");
+
+      if (type === "success") {
+        popupTimer = window.setTimeout(closePopup, 6500);
+      }
+    };
+
+    const userErrorMessage = () => "Your request could not be sent right now. Please try again or call us directly.";
+
+    popupClose?.addEventListener("click", closePopup);
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && popup.classList.contains("is-visible")) closePopup();
+    });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       if (window.location.protocol === "file:") {
-        status.textContent = "Open this page through Apache/PHP, not directly as a file.";
+        const message = userErrorMessage();
+        status.textContent = "";
+        status.classList.remove("is-success");
+        status.classList.add("is-error");
+        showPopup("error", "Unable to Send", message);
         return;
       }
 
-      status.textContent = "Sending request...";
+      status.textContent = "";
+      status.classList.remove("is-success", "is-error");
       if (submitButton) submitButton.disabled = true;
 
       try {
@@ -276,7 +329,7 @@
         });
         const contentType = response.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
-          throw new Error("Mail endpoint is not running as PHP. Use XAMPP/Hostinger, not Live Server.");
+          throw new Error("Mail endpoint returned an unexpected response.");
         }
 
         const result = await response.json();
@@ -285,10 +338,19 @@
           throw new Error(result.message || "Message could not be sent.");
         }
 
-        status.textContent = result.message || "Thanks. Your quote request has been sent.";
+        const message = result.message || "Thanks. Your quote request has been sent.";
+        status.textContent = "";
+        status.classList.remove("is-error");
+        status.classList.add("is-success");
+        showPopup("success", "Request Sent", message);
         form.reset();
       } catch (error) {
-        status.textContent = error.message || "Message could not be sent. Please call or DM Autoskins directly.";
+        console.error("Contact form error:", error);
+        const message = userErrorMessage();
+        status.textContent = "";
+        status.classList.remove("is-success");
+        status.classList.add("is-error");
+        showPopup("error", "Unable to Send", message);
       } finally {
         if (submitButton) submitButton.disabled = false;
       }
